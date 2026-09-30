@@ -30,7 +30,12 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
           script: |
-            appium &
-            sleep 10
+            appium --log-level info &
+            sleep 15
             APK_PATH=apk/app-debug.apk pytest -v tests/test_app.py -k "not llamada and not bateria"

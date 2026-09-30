@@ -33,4 +33,4 @@ jobs:
           script: |
             appium &
             sleep 10
-            APK_PATH=apk/app-debug.apk pytest -v -k "not llamada and not bateria"
+            APK_PATH=apk/app-debug.apk pytest -v tests/test_app.py -k "not llamada and not bateria"

@@ -1,44 +1,36 @@
-name: Mobile Automation Pipeline[cite: 33]
+name: Mobile Automation Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
 jobs:
   test:
-    runs-on: ubuntu-latest[cite: 33]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4[cite: 33]
-      
-      - uses: actions/setup-node@v4[cite: 33]
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: 22[cite: 33]
-          
-      - uses: actions/setup-python@v5[cite: 33]
+          node-version: '22'
+
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"[cite: 33]
-          
-      - name: Install Appium & Dependencies[cite: 33]
+          python-version: '3.12'
+
+      - name: Install Appium and Pytest
         run: |
           npm install -g appium
           appium driver install uiautomator2
           pip install Appium-Python-Client pytest
 
-      - name: Run Tests on Android Emulator[cite: 33]
-        uses: reactivecircus/android-emulator-runner@v2[cite: 33]
+      - name: Run Tests on Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 34[cite: 33]
+          api-level: 34
           script: |
             appium &
             sleep 10
-            # Excluimos pruebas de simulación GSM en CI/CD headless
-            APK_PATH=app/app-debug.apk pytest -v -k "not llamada and not bateria"
-
-      - name: Archive Test Evidence (Screenshots)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: evidencias-pruebas
-          path: evidencias/
+            APK_PATH=app/build/outputs/apk/debug/app-debug.apk pytest -v -k "not llamada and not bateria"

@@ -29,9 +29,9 @@ jobs:
       - name: Run Tests on Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 34
-          target: google_apis
-          arch: x86_64
+          api-level: 29
+          target: default
+          arch: x86
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
@@ -39,3 +39,10 @@ jobs:
             appium --log-level info &
             sleep 15
             APK_PATH=apk/app-debug.apk pytest -v tests/test_app.py -k "not llamada and not bateria"
+
+      - name: Archive Test Evidence (Screenshots)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencias-pruebas
+          path: evidencias/

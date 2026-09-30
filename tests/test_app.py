@@ -9,10 +9,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # Variables de entorno y rutas por defecto
-APP = os.getenv("APK_PATH", r"D:\Users\jtorrez\AndroidStudioProjects\AppPrueba\app\build\outputs\apk\debug\app-debug.apk")
+APP = os.getenv("APK_PATH", os.path.abspath("apk/app-debug.apk"))
 PKG = "com.example.appprueba"
-SERVER = "http://127.0.0.1:4723"
-EMU = "emulator-5554"
+SERVER = os.getenv("APPIUM_SERVER", "http://127.0.0.1:4723")
+EMU = os.getenv("EMULATOR_ID", "emulator-5554")
 
 # ---------------------------------------------------------------------------
 # Fixture & Configuración (Capabilities + Conexión)
@@ -24,6 +24,10 @@ def driver():
     options.device_name = "Android Emulator"
     options.app = APP
     options.new_command_timeout = 120
+    
+    # ⏱️ Timeouts extendidos para evitar 'timed out' en GitHub Actions / CI/CD
+    options.set_capability("appium:uiautomator2ServerInstallTimeout", 90000)
+    options.set_capability("appium:adbExecTimeout", 90000)
     
     # Soporte para dispositivo físico si se define UDID
     if os.getenv("UDID"):
@@ -161,7 +165,7 @@ def test_perdida_de_conexion(driver):
         driver.execute_script("mobile: setConnectivity", {"wifi": False, "data": False})
         time.sleep(1)
         
-        # 📸 CAPTURA AHORA: Con las conexiones deshabilitadas (iconos de red en la barra de estado)
+        # 📸 CAPTURA AHORA: Con las conexiones deshabilitadas
         tomar_evidencia(driver, "test_perdida_de_conexion")
         
         assert "Bienvenido" in login(driver, "juan", "1234")
